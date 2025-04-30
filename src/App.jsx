@@ -2,55 +2,54 @@ import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [weatherData, setWeatherData] = useState(null); //cunki api-dan gelen melumatlar birbasa obyekterdir
+  const [weatherData, setWeatherData] = useState(null);
   const [city, setCity] = useState('');
-
-  //eger ilkden hansisa olkenin melumatinin gorunmeyini isteyirikse, yaza bilerdik. Bunu ilk addimda yazmisdim
-  // async function getAllData() {
-  //   const res = await fetch("https://api.weatherapi.com/v1/current.json?key=7b1eaf6efd804a44b87101529222212&q=spain&aqi=no");
-  //   const data = await res.json();
-  //   setWeatherData(data);
-  // } 
-
-  // useEffect(() => {
-  //   getAllData();
-  // }, []);
+  const [errorMessage, seterrorMessage] = useState('');
 
   async function handleSearch(e) {
-    e.preventDefault();   //refreshin qarisis alinir
-    if (!city) return;    //seher adi sehv yazilmasin deye
+    e.preventDefault();   // refreshin qarşısını alır
 
     try {
-      const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=7b1eaf6efd804a44b87101529222212&q=${city}&aqi=no`);   //api-in bu hissesinde seher deyisir
+      const res = await fetch(`https://api.weatherapi.com/v1/current.json?key=7b1eaf6efd804a44b87101529222212&q=${city}&aqi=no`);
+
+      if (!res.ok) {
+        throw new Error('City not found!');
+      }
 
       const data = await res.json();
       setWeatherData(data);
+      seterrorMessage('');  //eger duzduse error cixmasin
 
     } catch (error) {
-      console.log(error);
-
+      seterrorMessage(error.message); 
+      console.log(error.message);  
     }
   }
 
-
   return (
-    <div className='container'>
+    <div className="container">
       <form onSubmit={handleSearch}>
-        <input type="text" id="inp" value={city}
-          onChange={(e) => setCity(e.target.value)} />
-        <button type="submit">Get ForeCast</button>
+        <input
+          type="text"
+          id="inp"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+        />
+        <button type="submit">Get Forecast</button>
       </form>
+
+      {errorMessage && <p className='error-message'>{errorMessage}</p>}
 
       {weatherData && (
         <>
-          <span className='country_name'>{weatherData.location.name}</span>
+          <span className="country_name">{weatherData.location.name}</span>
           <img src={weatherData.current.condition.icon} alt="icon" />
-          <span className='country_name'>{weatherData.current.condition.text}</span>
+          <span className="country_name">{weatherData.current.condition.text}</span>
           <p>{weatherData.current.temp_c}° C</p>
           <p>{weatherData.current.temp_f}° F</p>
-          <div className='bottom_info'>
-            <p>Wind {weatherData.current.wind_mph}MPH</p>
-            <p>Visibility {weatherData.current.vis_miles}M</p>
+          <div className="bottom_info">
+            <p>Wind {weatherData.current.wind_mph} MPH</p>
+            <p>Visibility {weatherData.current.vis_miles} miles</p>
           </div>
         </>
       )}

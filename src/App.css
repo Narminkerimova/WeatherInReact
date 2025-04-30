@@ -38,6 +38,7 @@ form{
 input{
   width: 60%;
   height: 60%;
+  padding: 2%;
 }
 button{
   width: 25%;
@@ -59,4 +60,10 @@ img{
   justify-content: center;
   gap: 20px;
   align-items: center;
+}
+.error-message {
+  color: red;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-top: 20px;
 }
